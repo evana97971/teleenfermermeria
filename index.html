@@ -98,9 +98,18 @@
       e.preventDefault();
       const usuario = document.getElementById('usuario').value;
       const clave = document.getElementById('clave').value;
-      if(usuario === "junior" && clave === "tele2026"){
+   const usuarios = [
+  {user: "admin", pass: "1234"},
+  {user: "junior", pass: "tele2026"}
+];
+
+const valido = usuarios.some(u => u.user === usuario && u.pass === clave);
+if(valido){
    // acceso permitido
+} else {
+   // error
 }
+
         document.getElementById('login').style.display = "none";
         document.getElementById('panel').style.display = "block";
       } else {
