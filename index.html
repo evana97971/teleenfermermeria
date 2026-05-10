@@ -113,7 +113,6 @@
   <script>
     // Usuarios
     const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    // Pacientes y consultas
     const pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
     const consultas = JSON.parse(localStorage.getItem('consultas')) || [];
 
@@ -185,4 +184,4 @@
     // Mostrar pacientes
     function mostrarPacientes(){
       const tbody = document.querySelector('#tablaPacientes tbody');
-      tbody.innerHTML =
+      tbody
