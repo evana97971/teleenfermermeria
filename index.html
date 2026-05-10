@@ -61,6 +61,7 @@
 
   <!-- Panel de administración -->
   <section id="panel">
+    <button id="logout">Cerrar Sesión</button>
     <nav>
       <a href="#pacientes">Pacientes</a>
       <a href="#consultas">Consultas</a>
@@ -149,6 +150,13 @@
       }
     });
 
+    // Logout
+    document.getElementById('logout').addEventListener('click', () => {
+      document.getElementById('panel').style.display = "none";
+      document.getElementById('login').style.display = "block";
+      document.getElementById('registro').style.display = "block";
+    });
+
     // Registrar pacientes
     document.getElementById('registroPacienteForm').addEventListener('submit', e => {
       e.preventDefault();
@@ -177,15 +185,4 @@
     // Mostrar pacientes
     function mostrarPacientes(){
       const tbody = document.querySelector('#tablaPacientes tbody');
-      tbody.innerHTML = '';
-      pacientes.forEach(p => {
-        tbody.innerHTML += `<tr><td>${p.nombre}</td><td>${p.edad}</td><td>${p.dni}</td></tr>`;
-      });
-    }
-
-    // Mostrar consultas
-    function mostrarConsultas(){
-      const tbody = document.querySelector('#tablaConsultas tbody');
-      tbody.innerHTML = '';
-      consultas.forEach(c => {
-        tbody
+      tbody.innerHTML =
