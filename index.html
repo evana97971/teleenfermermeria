@@ -21,8 +21,6 @@
     table { width:100%; border-collapse:collapse; margin-top:20px; }
     table, th, td { border:1px solid #ccc; }
     th, td { padding:10px; text-align:left; }
-    .stats { display:flex; gap:20px; margin-top:20px; flex-wrap:wrap; }
-    .card { flex:1; background:#0078d7; color:white; padding:20px; border-radius:10px; text-align:center; }
     footer { background:#0078d7; color:white; text-align:center; padding:15px; }
     #panel { display:none; }
   </style>
@@ -111,7 +109,6 @@
   </footer>
 
   <script>
-    // Usuarios
     const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
     const pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
     const consultas = JSON.parse(localStorage.getItem('consultas')) || [];
@@ -121,10 +118,10 @@
       e.preventDefault();
       const user = document.getElementById('nuevoUsuario').value;
       const pass = document.getElementById('nuevaClave').value;
-      if(usuarios.some(u => u.user === user)){
+      if (usuarios.some(u => u.user === user)) {
         document.getElementById('mensajeRegistro').textContent = "⚠️ Usuario ya existe.";
       } else {
-        usuarios.push({user, pass});
+        usuarios.push({ user, pass });
         localStorage.setItem('usuarios', JSON.stringify(usuarios));
         document.getElementById('mensajeRegistro').textContent = "✅ Usuario registrado correctamente.";
         e.target.reset();
@@ -137,7 +134,8 @@
       const usuario = document.getElementById('usuario').value;
       const clave = document.getElementById('clave').value;
       const valido = usuarios.some(u => u.user === usuario && u.pass === clave);
-      if(valido){
+
+      if (valido) {
         document.getElementById('login').style.display = "none";
         document.getElementById('registro').style.display = "none";
         document.getElementById('panel').style.display = "block";
@@ -182,6 +180,15 @@
     });
 
     // Mostrar pacientes
-    function mostrarPacientes(){
+    function mostrarPacientes() {
       const tbody = document.querySelector('#tablaPacientes tbody');
-      tbody
+      tbody.innerHTML = '';
+      pacientes.forEach(p => {
+        tbody.innerHTML += `<tr><td>${p.nombre}</td><td>${p.edad}</td><td>${p.dni}</td></tr>`;
+      });
+    }
+
+    // Mostrar consultas
+    function mostrarConsultas() {
+      const tbody = document.querySelector('#tablaConsultas tbody');
+      tbody.innerHTML =
