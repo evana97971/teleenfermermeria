@@ -24,7 +24,7 @@
     .stats { display:flex; gap:20px; margin-top:20px; flex-wrap:wrap; }
     .card { flex:1; background:#0078d7; color:white; padding:20px; border-radius:10px; text-align:center; }
     footer { background:#0078d7; color:white; text-align:center; padding:15px; }
-    #login { max-width:400px; margin:auto; }
+    #panel { display:none; }
   </style>
 </head>
 <body>
@@ -32,8 +32,23 @@
     <h1>Teleenfermería Comunitaria</h1>
     <p>Panel de Administración Moderno</p>
   </header>
-<section id="login">
-    <h2>Login Enfermeras</h2>
+
+  <!-- Registro de usuarios -->
+  <section id="registro">
+    <h2>Registrar Usuario</h2>
+    <div class="formulario">
+      <form id="registroForm">
+        <input type="text" id="nuevoUsuario" placeholder="Usuario" required>
+        <input type="password" id="nuevaClave" placeholder="Contraseña" required>
+        <button type="submit">Registrar</button>
+      </form>
+      <p id="mensajeRegistro"></p>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section id="login">
+    <h2>Login</h2>
     <div class="formulario">
       <form id="loginForm">
         <input type="text" id="usuario" placeholder="Usuario" required>
@@ -43,15 +58,18 @@
       <p id="mensajeLogin"></p>
     </div>
   </section>
-<section id="panel" style="display:none;">
+
+  <!-- Panel de administración -->
+  <section id="panel">
     <nav>
       <a href="#pacientes">Pacientes</a>
       <a href="#consultas">Consultas</a>
       <a href="#estadisticas">Estadísticas</a>
     </nav>
+
     <section id="pacientes">
       <h2>Gestión de Pacientes</h2>
-      <form id="registroForm" class="formulario">
+      <form id="registroPacienteForm" class="formulario">
         <input type="text" id="nombrePaciente" placeholder="Nombre" required>
         <input type="number" id="edadPaciente" placeholder="Edad" required>
         <input type="text" id="dniPaciente" placeholder="DNI" required>
@@ -85,40 +103,54 @@
       <h2>Estadísticas</h2>
       <canvas id="graficoConsultas"></canvas>
     </section>
-</section>
-<footer>
+  </section>
+
+  <footer>
     <p>&copy; 2026 Teleenfermería Comunitaria</p>
   </footer>
-<script>
+
+  <script>
+    // Usuarios
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    // Pacientes y consultas
     const pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
     const consultas = JSON.parse(localStorage.getItem('consultas')) || [];
 
-    // Login simulado
+    // Registro de usuarios
+    document.getElementById('registroForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const user = document.getElementById('nuevoUsuario').value;
+      const pass = document.getElementById('nuevaClave').value;
+      if(usuarios.some(u => u.user === user)){
+        document.getElementById('mensajeRegistro').textContent = "⚠️ Usuario ya existe.";
+      } else {
+        usuarios.push({user, pass});
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+        document.getElementById('mensajeRegistro').textContent = "✅ Usuario registrado correctamente.";
+        e.target.reset();
+      }
+    });
+
+    // Login
     document.getElementById('loginForm').addEventListener('submit', e => {
       e.preventDefault();
       const usuario = document.getElementById('usuario').value;
       const clave = document.getElementById('clave').value;
-   const usuarios = [
-  {user: "admin", pass: "1234"},
-  {user: "junior", pass: "tele2026"}
-];
-
-const valido = usuarios.some(u => u.user === usuario && u.pass === clave);
-if(valido){
-   // acceso permitido
-} else {
-   // error
-}
-
+      const valido = usuarios.some(u => u.user === usuario && u.pass === clave);
+      if(valido){
         document.getElementById('login').style.display = "none";
+        document.getElementById('registro').style.display = "none";
         document.getElementById('panel').style.display = "block";
+        mostrarPacientes();
+        mostrarConsultas();
+        actualizarGrafico();
       } else {
         document.getElementById('mensajeLogin').textContent = "❌ Usuario o contraseña incorrectos.";
       }
     });
 
     // Registrar pacientes
-    document.getElementById('registroForm').addEventListener('submit', e => {
+    document.getElementById('registroPacienteForm').addEventListener('submit', e => {
       e.preventDefault();
       const nombre = document.getElementById('nombrePaciente').value;
       const edad = document.getElementById('edadPaciente').value;
@@ -142,6 +174,7 @@ if(valido){
       e.target.reset();
     });
 
+    // Mostrar pacientes
     function mostrarPacientes(){
       const tbody = document.querySelector('#tablaPacientes tbody');
       tbody.innerHTML = '';
@@ -150,30 +183,9 @@ if(valido){
       });
     }
 
+    // Mostrar consultas
     function mostrarConsultas(){
       const tbody = document.querySelector('#tablaConsultas tbody');
       tbody.innerHTML = '';
       consultas.forEach(c => {
-        tbody.innerHTML += `<tr><td>${c.dni}</td><td>${c.motivo}</td><td>${c.tipo}</td></tr>`;
-      });
-    }
-
-    // Gráfico con Chart.js
-    const ctx = document.getElementById('graficoConsultas').getContext('2d');
-    const grafico = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Seguimiento','Educación','Emergencia'],
-        datasets: [{
-          label: 'Consultas',
-          data: [0,0,0],
-          backgroundColor: ['#0078d7','#00a86b','#ff4d4d']
-        }]
-      }
-    });
-
-    function actualizarGrafico(){
-      const seguimiento = consultas.filter(c => c.tipo === 'seguimiento').length;
-      const educacion = consultas.filter(c => c.tipo === 'educacion').length;
-      const emergencia = consultas.filter(c => c.tipo === 'emergencia').length;
-      grafico.data.datasets[0].data = [
+        tbody
